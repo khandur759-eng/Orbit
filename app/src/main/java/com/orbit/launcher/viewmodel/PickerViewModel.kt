@@ -30,7 +30,7 @@ class PickerViewModel(application: Application) : AndroidViewModel(application) 
     private val _loading = MutableStateFlow(true)
     val loading: StateFlow<Boolean> = _loading.asStateFlow()
 
-    private val _focusAngleDegrees = MutableStateFlow(270f)
+    private val _focusAngleDegrees = MutableStateFlow(0f)
     val focusAngleDegrees: StateFlow<Float> = _focusAngleDegrees.asStateFlow()
 
     private val _message = MutableStateFlow<String?>(null)

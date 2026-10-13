@@ -81,7 +81,7 @@ fun PickerScreen(
                 wheel = wheel,
                 iconScale = 1f,
                 hapticsEnabled = true,
-                focusAngleRadians = Math.toRadians(focusAngleDegrees.toDouble()).toFloat(),
+                focusAngleRadians = Math.toRadians((focusAngleDegrees - 90f).toDouble()).toFloat(),
                 onLaunch = { app -> viewModel.launch(app, onClose) },
                 modifier = Modifier.fillMaxSize()
             )

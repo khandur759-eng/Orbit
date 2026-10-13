@@ -21,8 +21,8 @@ data class OrbitSettings(
     val hapticsEnabled: Boolean = true,
     val ordering: AppOrdering = AppOrdering.ALPHABETICAL,
     val iconScale: Float = 1.0f,
-    /** Angle (degrees, 0..360, screen coords) of the ring spot shown in the centre. 270 = top. */
-    val focusAngleDegrees: Float = 270f,
+    /** Which spot on the ring shows in the centre: degrees from Top, clockwise (0 = top). */
+    val focusAngleDegrees: Float = 0f,
     val recents: List<String> = emptyList(),
     /** Manually curated wheel selection (stable component ids). */
     val selectedApps: Set<String> = emptySet(),
@@ -56,7 +56,7 @@ class AppPreferences(private val context: Context) {
                 AppOrdering.valueOf(p[Keys.ORDERING] ?: AppOrdering.ALPHABETICAL.name)
             }.getOrDefault(AppOrdering.ALPHABETICAL),
             iconScale = p[Keys.ICON_SCALE] ?: 1.0f,
-            focusAngleDegrees = p[Keys.FOCUS_ANGLE] ?: 270f,
+            focusAngleDegrees = p[Keys.FOCUS_ANGLE] ?: 0f,
             recents = (p[Keys.RECENTS] ?: "").split("\n").filter { it.isNotBlank() },
             selectedApps = p[Keys.SELECTED] ?: emptySet(),
             selectionInitialized = p[Keys.SELECTION_INITIALIZED] ?: false

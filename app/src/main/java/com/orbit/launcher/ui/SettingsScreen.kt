@@ -2,6 +2,8 @@ package com.orbit.launcher.ui
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -94,7 +96,10 @@ fun SettingsScreen(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 20.dp),
+                .weight(1f)
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 20.dp)
+                .padding(bottom = 32.dp),
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             SettingRow(title = "Haptic feedback", subtitle = "Vibrate when you pick an app") {
@@ -234,23 +239,11 @@ private fun CentrePositionSetting(degrees: Float, onChange: (Float) -> Unit) {
 
         Spacer(Modifier.height(12.dp))
 
-        Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-            FocusCompass(degrees, Modifier.size(64.dp))
-            Spacer(Modifier.width(20.dp))
-            Column {
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    FocusChip("Top", 270f, degrees, onChange)
-                    FocusChip("Right", 0f, degrees, onChange)
-                }
-                Spacer(Modifier.height(8.dp))
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    FocusChip("Bottom", 90f, degrees, onChange)
-                    FocusChip("Left", 180f, degrees, onChange)
-                }
-            }
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+            FocusCompass(degrees, Modifier.size(110.dp))
         }
 
-        Spacer(Modifier.height(8.dp))
+        Spacer(Modifier.height(12.dp))
 
         Slider(
             value = degrees,
@@ -260,7 +253,7 @@ private fun CentrePositionSetting(degrees: Float, onChange: (Float) -> Unit) {
             modifier = Modifier.fillMaxWidth()
         )
         Text(
-            "Tap a direction, or drag for any angle between them.",
+            "0\u00b0 is Top and turns clockwise. Drag to choose any direction.",
             color = OrbitColors.TextSecondary,
             style = MaterialTheme.typography.bodySmall
         )
@@ -270,7 +263,7 @@ private fun CentrePositionSetting(degrees: Float, onChange: (Float) -> Unit) {
 /** Small compass showing where the centre's focus sits on the ring. */
 @Composable
 private fun FocusCompass(degrees: Float, modifier: Modifier = Modifier) {
-    val rad = Math.toRadians(degrees.toDouble()).toFloat()
+    val rad = Math.toRadians((degrees - 90.0)).toFloat()
     Canvas(modifier) {
         val center = Offset(size.width / 2f, size.height / 2f)
         val r = size.minDimension / 2f - 6.dp.toPx()
@@ -288,19 +281,10 @@ private fun FocusCompass(degrees: Float, modifier: Modifier = Modifier) {
     }
 }
 
-@Composable
-private fun FocusChip(label: String, angle: Float, current: Float, onChange: (Float) -> Unit) {
-    val diff = (((current - angle) % 360f) + 360f) % 360f
-    FilterChip(
-        selected = diff < 1f || diff > 359f,
-        onClick = { onChange(angle) },
-        label = { Text(label) }
-    )
-}
-
 /** Human-readable name for the focus angle, plus the exact degrees. */
 private fun directionLabel(degrees: Float): String {
-    val names = arrayOf("Right", "Down-right", "Bottom", "Down-left", "Left", "Up-left", "Top", "Up-right")
+    // 0° = Top, turning clockwise.
+    val names = arrayOf("Top", "Top-right", "Right", "Bottom-right", "Bottom", "Bottom-left", "Left", "Top-left")
     val idx = (((degrees / 45f).roundToInt() % 8) + 8) % 8
     return "${names[idx]} · ${degrees.roundToInt()}°"
 }

@@ -110,7 +110,7 @@ fun OrbitScreen(viewModel: OrbitViewModel) {
                         wheel = wheel,
                         iconScale = state.settings.iconScale,
                         hapticsEnabled = state.settings.hapticsEnabled,
-                        focusAngleRadians = Math.toRadians(state.settings.focusAngleDegrees.toDouble()).toFloat(),
+                        focusAngleRadians = Math.toRadians((state.settings.focusAngleDegrees - 90f).toDouble()).toFloat(),
                         onLaunch = viewModel::launch,
                         modifier = Modifier.fillMaxSize()
                     )

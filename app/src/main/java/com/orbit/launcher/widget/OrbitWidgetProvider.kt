@@ -196,7 +196,7 @@ private suspend fun render(context: Context, manager: AppWidgetManager, widgetId
     val settings = AppPreferences(context).settings.first()
     val apps = resolveApps(context)
     val iconScale = settings.iconScale
-    val focusAngle = Math.toRadians(settings.focusAngleDegrees.toDouble()).toFloat()
+    val focusAngle = Math.toRadians((settings.focusAngleDegrees - 90f).toDouble()).toFloat()
 
     val modern = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
     val views = RemoteViews(context.packageName, if (modern) R.layout.orbit_widget else R.layout.orbit_widget_legacy)

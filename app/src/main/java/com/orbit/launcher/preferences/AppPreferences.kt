@@ -21,6 +21,8 @@ data class OrbitSettings(
     val hapticsEnabled: Boolean = true,
     val ordering: AppOrdering = AppOrdering.ALPHABETICAL,
     val iconScale: Float = 1.0f,
+    /** Angle (degrees, 0..360, screen coords) of the ring spot shown in the centre. 270 = top. */
+    val focusAngleDegrees: Float = 270f,
     val recents: List<String> = emptyList(),
     /** Manually curated wheel selection (stable component ids). */
     val selectedApps: Set<String> = emptySet(),
@@ -41,6 +43,7 @@ class AppPreferences(private val context: Context) {
         val HAPTICS = booleanPreferencesKey("haptics_enabled")
         val ORDERING = stringPreferencesKey("ordering")
         val ICON_SCALE = floatPreferencesKey("icon_scale")
+        val FOCUS_ANGLE = floatPreferencesKey("focus_angle_degrees")
         val RECENTS = stringPreferencesKey("recents")
         val SELECTED = stringSetPreferencesKey("selected_apps")
         val SELECTION_INITIALIZED = booleanPreferencesKey("selection_initialized")
@@ -53,6 +56,7 @@ class AppPreferences(private val context: Context) {
                 AppOrdering.valueOf(p[Keys.ORDERING] ?: AppOrdering.ALPHABETICAL.name)
             }.getOrDefault(AppOrdering.ALPHABETICAL),
             iconScale = p[Keys.ICON_SCALE] ?: 1.0f,
+            focusAngleDegrees = p[Keys.FOCUS_ANGLE] ?: 270f,
             recents = (p[Keys.RECENTS] ?: "").split("\n").filter { it.isNotBlank() },
             selectedApps = p[Keys.SELECTED] ?: emptySet(),
             selectionInitialized = p[Keys.SELECTION_INITIALIZED] ?: false
@@ -69,6 +73,11 @@ class AppPreferences(private val context: Context) {
 
     suspend fun setIconScale(scale: Float) {
         context.dataStore.edit { it[Keys.ICON_SCALE] = scale.coerceIn(MIN_ICON_SCALE, MAX_ICON_SCALE) }
+    }
+
+    /** Which spot on the ring is shown in the centre (degrees, normalised to 0..360). */
+    suspend fun setFocusAngle(degrees: Float) {
+        context.dataStore.edit { it[Keys.FOCUS_ANGLE] = ((degrees % 360f) + 360f) % 360f }
     }
 
     /**

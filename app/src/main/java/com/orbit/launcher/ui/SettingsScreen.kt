@@ -46,6 +46,7 @@ fun SettingsScreen(
     onHapticsChange: (Boolean) -> Unit,
     onOrderingChange: (AppOrdering) -> Unit,
     onIconScaleChange: (Float) -> Unit,
+    onFocusAngleChange: (Float) -> Unit,
     onReset: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -115,6 +116,34 @@ fun SettingsScreen(
                 )
             }
 
+            // Which spot on the ring is shown in the centre.
+            Column(modifier = Modifier.fillMaxWidth().padding(vertical = 12.dp)) {
+                Text(
+                    text = "Centre shows the app at",
+                    color = OrbitColors.TextPrimary,
+                    style = MaterialTheme.typography.bodyLarge
+                )
+                Text(
+                    text = "Which spot on the ring appears in the centre",
+                    color = OrbitColors.TextSecondary,
+                    style = MaterialTheme.typography.bodySmall
+                )
+                Spacer(Modifier.height(8.dp))
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    FocusChip("Top", 270f, settings.focusAngleDegrees, onFocusAngleChange)
+                    FocusChip("Right", 0f, settings.focusAngleDegrees, onFocusAngleChange)
+                    FocusChip("Bottom", 90f, settings.focusAngleDegrees, onFocusAngleChange)
+                    FocusChip("Left", 180f, settings.focusAngleDegrees, onFocusAngleChange)
+                }
+                Spacer(Modifier.height(4.dp))
+                Slider(
+                    value = settings.focusAngleDegrees,
+                    onValueChange = onFocusAngleChange,
+                    valueRange = 0f..360f,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+
             Spacer(Modifier.height(8.dp))
 
             SettingRow(title = "Launchable apps", subtitle = "Detected on this device") {
@@ -156,6 +185,16 @@ fun SettingsScreen(
             }
         )
     }
+}
+
+@Composable
+private fun FocusChip(label: String, angle: Float, current: Float, onChange: (Float) -> Unit) {
+    val diff = (((current - angle) % 360f) + 360f) % 360f
+    FilterChip(
+        selected = diff < 1f || diff > 359f,
+        onClick = { onChange(angle) },
+        label = { Text(label) }
+    )
 }
 
 @Composable

@@ -61,6 +61,7 @@ fun CircularAppWheel(
     wheel: WheelMotionState,
     iconScale: Float,
     hapticsEnabled: Boolean,
+    focusAngleRadians: Float = -HALF_PI,
     onLaunch: (InstalledApp) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -127,7 +128,7 @@ fun CircularAppWheel(
         val center = Offset(widthPx / 2f, heightPx / 2f)
 
         // Shared geometry — identical to the widget renderer by construction.
-        val geo = WheelGeometry(minDim, iconScale, count)
+        val geo = WheelGeometry(minDim, iconScale, count, focusAngleRadians)
         val radius = geo.radius
         val iconPx = geo.iconPx
         val visibleCount = geo.visibleCount
@@ -202,7 +203,7 @@ fun CircularAppWheel(
             val j = k - visibleCount / 2
             val idx = wrapIndex(base + j, count)
             val app = apps[idx]
-            val angle = -HALF_PI + (j - frac) * step
+            val angle = focusAngleRadians + (j - frac) * step
             val x = center.x + radius * cos(angle)
             val y = center.y + radius * sin(angle)
             val focused = idx == focusIdx

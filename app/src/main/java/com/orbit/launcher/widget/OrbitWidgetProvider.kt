@@ -196,6 +196,7 @@ private suspend fun render(context: Context, manager: AppWidgetManager, widgetId
     val settings = AppPreferences(context).settings.first()
     val apps = resolveApps(context)
     val iconScale = settings.iconScale
+    val focusAngle = Math.toRadians(settings.focusAngleDegrees.toDouble()).toFloat()
 
     val modern = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
     val views = RemoteViews(context.packageName, if (modern) R.layout.orbit_widget else R.layout.orbit_widget_legacy)
@@ -216,7 +217,7 @@ private suspend fun render(context: Context, manager: AppWidgetManager, widgetId
     val offset = getOffset(context, widgetId) % count
 
     if (modern) {
-        renderModern(context, views, widgetId, apps, offset, iconScale)
+        renderModern(context, views, widgetId, apps, offset, iconScale, focusAngle)
     } else {
         renderLegacy(context, views, widgetId, apps, offset)
     }
@@ -238,7 +239,8 @@ private fun renderModern(
     widgetId: Int,
     apps: List<InstalledApp>,
     offset: Int,
-    iconScale: Float
+    iconScale: Float,
+    focusAngle: Float
 ) {
     val count = apps.size
     val density = context.resources.displayMetrics.density
@@ -254,11 +256,11 @@ private fun renderModern(
         )
     ).coerceAtLeast(MIN_SIDE_DP.toInt()) - 12
 
-    val geoDp = WheelGeometry(sideDp.toFloat(), iconScale, count)
+    val geoDp = WheelGeometry(sideDp.toFloat(), iconScale, count, focusAngle)
     val visible = geoDp.visibleCount
 
     val sizePx = (sideDp * density).toInt()
-    WidgetWheelRenderer.render(apps, offset, sizePx, iconScale, density)
+    WidgetWheelRenderer.render(apps, offset, sizePx, iconScale, density, focusAngle)
         ?.let { views.setImageViewBitmap(R.id.wheel_image, it) }
 
     views.setViewLayoutWidth(R.id.wheel_box, sideDp.toFloat(), TypedValue.COMPLEX_UNIT_DIP)

@@ -45,6 +45,7 @@ fun PickerScreen(
     val apps by viewModel.apps.collectAsStateWithLifecycle()
     val loading by viewModel.loading.collectAsStateWithLifecycle()
     val message by viewModel.message.collectAsStateWithLifecycle()
+    val focusAngleDegrees by viewModel.focusAngleDegrees.collectAsStateWithLifecycle()
 
     val decay = remember { exponentialDecay<Float>(frictionMultiplier = 1.5f) }
     val wheel = remember { WheelMotionState(decay) }
@@ -80,6 +81,7 @@ fun PickerScreen(
                 wheel = wheel,
                 iconScale = 1f,
                 hapticsEnabled = true,
+                focusAngleRadians = Math.toRadians(focusAngleDegrees.toDouble()).toFloat(),
                 onLaunch = { app -> viewModel.launch(app, onClose) },
                 modifier = Modifier.fillMaxSize()
             )

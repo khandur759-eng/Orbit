@@ -136,6 +136,13 @@ class OrbitViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    fun setFocusAngle(degrees: Float) {
+        viewModelScope.launch {
+            preferences.setFocusAngle(degrees)
+            OrbitWidgetProvider.updateAll(getApplication())
+        }
+    }
+
     fun resetPreferences() {
         viewModelScope.launch {
             preferences.reset()

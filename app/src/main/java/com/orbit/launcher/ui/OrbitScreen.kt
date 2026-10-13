@@ -110,6 +110,7 @@ fun OrbitScreen(viewModel: OrbitViewModel) {
                         wheel = wheel,
                         iconScale = state.settings.iconScale,
                         hapticsEnabled = state.settings.hapticsEnabled,
+                        focusAngleRadians = Math.toRadians(state.settings.focusAngleDegrees.toDouble()).toFloat(),
                         onLaunch = viewModel::launch,
                         modifier = Modifier.fillMaxSize()
                     )
@@ -153,6 +154,7 @@ fun OrbitScreen(viewModel: OrbitViewModel) {
                 onHapticsChange = viewModel::setHaptics,
                 onOrderingChange = viewModel::setOrdering,
                 onIconScaleChange = viewModel::setIconScale,
+                onFocusAngleChange = viewModel::setFocusAngle,
                 onReset = viewModel::resetPreferences,
                 modifier = Modifier.fillMaxSize()
             )

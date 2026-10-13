@@ -30,6 +30,9 @@ class PickerViewModel(application: Application) : AndroidViewModel(application) 
     private val _loading = MutableStateFlow(true)
     val loading: StateFlow<Boolean> = _loading.asStateFlow()
 
+    private val _focusAngleDegrees = MutableStateFlow(270f)
+    val focusAngleDegrees: StateFlow<Float> = _focusAngleDegrees.asStateFlow()
+
     private val _message = MutableStateFlow<String?>(null)
     val message: StateFlow<String?> = _message.asStateFlow()
 
@@ -43,6 +46,7 @@ class PickerViewModel(application: Application) : AndroidViewModel(application) 
             val settings = preferences.settings.first()
             val all = repository.loadLaunchableApps(getApplication<Application>().packageName)
             _apps.value = WheelApps.resolve(all, settings)
+            _focusAngleDegrees.value = settings.focusAngleDegrees
             _loading.value = false
         }
     }

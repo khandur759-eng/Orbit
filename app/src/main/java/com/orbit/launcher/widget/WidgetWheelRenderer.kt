@@ -32,12 +32,13 @@ object WidgetWheelRenderer {
         offset: Int,
         sizePx: Int,
         iconScale: Float,
-        density: Float
+        density: Float,
+        focusAngle: Float
     ): Bitmap? {
         if (apps.isEmpty() || sizePx <= 0) return null
         val side = sizePx.coerceAtMost(MAX_SIDE)
         val size = side.toFloat()
-        val geo = WheelGeometry(size, iconScale, apps.size)
+        val geo = WheelGeometry(size, iconScale, apps.size, focusAngle)
         val count = apps.size
         val c = side / 2f
 

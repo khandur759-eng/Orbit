@@ -1,19 +1,39 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("org.jetbrains.kotlin.plugin.compose")
 }
 
+// Stable signing key: read from keystore.properties when present (never committed).
+val keystorePropsFile = rootProject.file("keystore.properties")
+val keystoreProps = Properties().apply {
+    if (keystorePropsFile.exists()) keystorePropsFile.inputStream().use { load(it) }
+}
+val hasStableKeystore = keystorePropsFile.exists()
+
 android {
     namespace = "com.orbit.launcher"
     compileSdk = 35
+
+    signingConfigs {
+        if (hasStableKeystore) {
+            create("stable") {
+                storeFile = rootProject.file(keystoreProps.getProperty("storeFile"))
+                storePassword = keystoreProps.getProperty("storePassword")
+                keyAlias = keystoreProps.getProperty("keyAlias")
+                keyPassword = keystoreProps.getProperty("keyPassword")
+            }
+        }
+    }
 
     defaultConfig {
         applicationId = "com.orbit.launcher"
         minSdk = 26
         targetSdk = 35
-        versionCode = 2
-        versionName = "1.1.0"
+        versionCode = 3
+        versionName = "1.2.0"
         vectorDrawables { useSupportLibrary = true }
     }
 
@@ -24,6 +44,12 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            if (hasStableKeystore) signingConfig = signingConfigs.getByName("stable")
+        }
+        debug {
+            // Sign debug builds with the stable key too, so a new build installs
+            // over the previous one instead of demanding a reinstall.
+            if (hasStableKeystore) signingConfig = signingConfigs.getByName("stable")
         }
     }
 

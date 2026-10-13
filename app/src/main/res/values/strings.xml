@@ -30,6 +30,7 @@
     <string name="widget_label">Orbit</string>
     <string name="widget_description">Your selected apps, arranged in a circle. Tap an icon to open it.</string>
     <string name="widget_empty_text">No apps selected</string>
+    <string name="widget_error_text">Couldn\u2019t load apps</string>
     <string name="edit_in_orbit">Edit in Orbit</string>
     <string name="widget_prev">Previous apps</string>
     <string name="widget_next">Next apps</string>

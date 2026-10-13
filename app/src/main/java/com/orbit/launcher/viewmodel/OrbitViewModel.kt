@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.orbit.launcher.apps.AppLauncher
 import com.orbit.launcher.apps.AppRepository
 import com.orbit.launcher.apps.InstalledApp
+import com.orbit.launcher.apps.WheelApps
 import com.orbit.launcher.preferences.AppOrdering
 import com.orbit.launcher.preferences.AppPreferences
 import com.orbit.launcher.preferences.OrbitSettings
@@ -35,27 +36,17 @@ data class OrbitUiState(
     val filteredApps: List<InstalledApp>
         get() {
             val recents = settings.recents
-            val selected = settings.selectedApps
 
-            val byMode = when (mode) {
-                BrowseMode.SELECTED -> allApps.filter { it.id in selected }
-                BrowseMode.ALL -> allApps
+            // Selection + ordering come from the shared resolver so the main
+            // screen, picker and widget can never disagree.
+            val base = when (mode) {
+                BrowseMode.SELECTED -> WheelApps.resolve(allApps, settings)
+                BrowseMode.ALL -> WheelApps.order(allApps, settings)
                 BrowseMode.RECENT -> recents.mapNotNull { id -> allApps.firstOrNull { it.id == id } }
             }
 
             val q = query.trim()
-            val searched = if (q.isEmpty()) {
-                byMode
-            } else {
-                byMode.filter { it.label.contains(q, ignoreCase = true) }
-            }
-
-            return when (settings.ordering) {
-                AppOrdering.ALPHABETICAL ->
-                    searched.sortedWith(compareBy(String.CASE_INSENSITIVE_ORDER) { it.label })
-                AppOrdering.RECENT ->
-                    searched.sortedBy { recents.indexOf(it.id).let { i -> if (i < 0) Int.MAX_VALUE else i } }
-            }
+            return if (q.isEmpty()) base else base.filter { it.label.contains(q, ignoreCase = true) }
         }
 }
 
@@ -132,11 +123,17 @@ class OrbitViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun setOrdering(ordering: AppOrdering) {
-        viewModelScope.launch { preferences.setOrdering(ordering) }
+        viewModelScope.launch {
+            preferences.setOrdering(ordering)
+            OrbitWidgetProvider.updateAll(getApplication())
+        }
     }
 
     fun setIconScale(scale: Float) {
-        viewModelScope.launch { preferences.setIconScale(scale) }
+        viewModelScope.launch {
+            preferences.setIconScale(scale)
+            OrbitWidgetProvider.updateAll(getApplication())
+        }
     }
 
     fun resetPreferences() {

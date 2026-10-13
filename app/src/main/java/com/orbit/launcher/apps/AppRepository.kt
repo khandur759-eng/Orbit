@@ -1,5 +1,6 @@
 package com.orbit.launcher.apps
 
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -68,6 +69,44 @@ class AppRepository(private val context: Context) {
 
             result.sortWith(compareBy(String.CASE_INSENSITIVE_ORDER) { it.label })
             result
+        }
+
+    /**
+     * Resolves a list of stable ids (`pkg/activity`) to app entries, loading only
+     * those icons at [iconPx]. Ids whose component no longer resolves (uninstalled)
+     * are skipped. Used by the widget path so it never scans the whole inventory.
+     */
+    suspend fun loadSelectedApps(ids: List<String>, iconPx: Int): List<InstalledApp> =
+        withContext(Dispatchers.IO) {
+            val pm = context.packageManager
+            val out = ArrayList<InstalledApp>(ids.size)
+            for (id in ids) {
+                val parts = id.split("/")
+                if (parts.size != 2) continue
+                val cn = ComponentName(parts[0], parts[1])
+                try {
+                    val info = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                        pm.getActivityInfo(cn, PackageManager.ComponentInfoFlags.of(0L))
+                    } else {
+                        @Suppress("DEPRECATION")
+                        pm.getActivityInfo(cn, 0)
+                    }
+                    val label = info.loadLabel(pm)?.toString()?.takeIf { it.isNotBlank() } ?: cn.packageName
+                    val icon = info.loadIcon(pm)?.toBitmap(iconPx, iconPx)?.asImageBitmap()
+                    out.add(
+                        InstalledApp(
+                            id = id,
+                            packageName = cn.packageName,
+                            activityName = cn.className,
+                            label = label,
+                            icon = icon
+                        )
+                    )
+                } catch (t: Throwable) {
+                    // Uninstalled or no longer launchable: skip safely.
+                }
+            }
+            out
         }
 
     private fun loadIcon(info: ResolveInfo, pm: PackageManager): ImageBitmap? = try {

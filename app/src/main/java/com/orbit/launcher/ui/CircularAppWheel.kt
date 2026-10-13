@@ -36,7 +36,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.orbit.launcher.R
 import com.orbit.launcher.animation.HALF_PI
-import com.orbit.launcher.animation.TWO_PI
+import com.orbit.launcher.animation.WheelGeometry
 import com.orbit.launcher.animation.WheelMotionState
 import com.orbit.launcher.animation.angleDelta
 import com.orbit.launcher.animation.wrapIndex
@@ -126,14 +126,12 @@ fun CircularAppWheel(
         val count = apps.size
         val center = Offset(widthPx / 2f, heightPx / 2f)
 
-        val radius = minDim * 0.355f
-        val baseIconPx = minDim * 0.15f
-        val iconPx = (baseIconPx * iconScale).coerceAtLeast(minDim * 0.085f)
-
-        // Slot count adapts to radius and a minimum comfortable touch target.
-        val maxSlots = floor((TWO_PI * radius) / (iconPx * 1.35f)).toInt().coerceIn(6, 12)
-        val visibleCount = if (count in 1..maxSlots) count else maxSlots
-        val step = if (visibleCount > 0) TWO_PI / visibleCount else TWO_PI
+        // Shared geometry — identical to the widget renderer by construction.
+        val geo = WheelGeometry(minDim, iconScale, count)
+        val radius = geo.radius
+        val iconPx = geo.iconPx
+        val visibleCount = geo.visibleCount
+        val step = geo.step
         wheel.stepRadians = step
 
         val offsetValue = wheel.offset

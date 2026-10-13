@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.orbit.launcher.apps.AppLauncher
 import com.orbit.launcher.apps.AppRepository
 import com.orbit.launcher.apps.InstalledApp
+import com.orbit.launcher.apps.WheelApps
 import com.orbit.launcher.preferences.AppPreferences
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -41,14 +42,7 @@ class PickerViewModel(application: Application) : AndroidViewModel(application) 
             _loading.value = true
             val settings = preferences.settings.first()
             val all = repository.loadLaunchableApps(getApplication<Application>().packageName)
-            val list = when {
-                // Never saved a selection -> first-run fallback is All Apps.
-                !settings.selectionInitialized -> all
-                // Intentionally saved empty -> show the empty state, not All Apps.
-                settings.selectedApps.isEmpty() -> emptyList()
-                else -> all.filter { it.id in settings.selectedApps }
-            }
-            _apps.value = list
+            _apps.value = WheelApps.resolve(all, settings)
             _loading.value = false
         }
     }

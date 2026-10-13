@@ -2,17 +2,17 @@ package com.orbit.launcher
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
-import androidx.lifecycle.lifecycleScope
 import com.orbit.launcher.apps.AppLauncher
-import com.orbit.launcher.apps.AppRepository
+import com.orbit.launcher.preferences.AppPreferences
+import com.orbit.launcher.widget.OrbitWidgetProvider
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 /**
- * Invisible trampoline that a widget icon's PendingIntent targets. It validates
- * the requested id against the live inventory, launches that app with an
- * explicit intent, and finishes immediately — no UI, no picker, no Orbit screen.
+ * Invisible trampoline that a widget icon's PendingIntent targets. It launches the
+ * app straight from the id in the extra — no repository scan, so the tap is
+ * instant — records the launch for Recent ordering, and finishes immediately.
  */
 class AppLaunchActivity : ComponentActivity() {
 
@@ -25,19 +25,20 @@ class AppLaunchActivity : ComponentActivity() {
             return
         }
 
-        lifecycleScope.launch {
-            val app = withContext(Dispatchers.IO) {
-                AppRepository(applicationContext)
-                    .loadLaunchableApps(packageName)
-                    .firstOrNull { it.id == appId }
+        val result = AppLauncher.launchById(this, appId)
+        if (result.isFailure) {
+            // App removed or not launchable: refresh the widget so it drops the stale icon.
+            OrbitWidgetProvider.updateAll(this)
+        } else {
+            val app = applicationContext
+            CoroutineScope(Dispatchers.IO).launch {
+                AppPreferences(app).recordLaunch(appId)
             }
-            if (app != null) {
-                AppLauncher.launch(this@AppLaunchActivity, app)
-            }
-            finish()
-            @Suppress("DEPRECATION")
-            overridePendingTransition(0, 0)
         }
+
+        finish()
+        @Suppress("DEPRECATION")
+        overridePendingTransition(0, 0)
     }
 
     companion object {

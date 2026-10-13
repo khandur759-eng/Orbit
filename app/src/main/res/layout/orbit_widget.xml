@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/widget_bg"
+    android:padding="6dp">
+
+    <!-- Circular arrangement of app icons. Each ImageView carries its own
+         direct-launch PendingIntent; the centre ring is decorative only. -->
+    <FrameLayout
+        android:id="@+id/widget_circle"
+        android:layout_width="180dp"
+        android:layout_height="180dp"
+        android:layout_gravity="center">
+
+        <ImageView
+            android:id="@+id/widget_ring"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_launcher_foreground"
+            android:contentDescription="@string/app_name" />
+
+        <ImageView
+            android:id="@+id/widget_icon_0"
+            style="@style/OrbitWidgetIcon"
+            android:layout_marginStart="68dp"
+            android:layout_marginTop="6dp" />
+        <ImageView
+            android:id="@+id/widget_icon_1"
+            style="@style/OrbitWidgetIcon"
+            android:layout_marginStart="122dp"
+            android:layout_marginTop="37dp" />
+        <ImageView
+            android:id="@+id/widget_icon_2"
+            style="@style/OrbitWidgetIcon"
+            android:layout_marginStart="122dp"
+            android:layout_marginTop="99dp" />
+        <ImageView
+            android:id="@+id/widget_icon_3"
+            style="@style/OrbitWidgetIcon"
+            android:layout_marginStart="68dp"
+            android:layout_marginTop="130dp" />
+        <ImageView
+            android:id="@+id/widget_icon_4"
+            style="@style/OrbitWidgetIcon"
+            android:layout_marginStart="14dp"
+            android:layout_marginTop="99dp" />
+        <ImageView
+            android:id="@+id/widget_icon_5"
+            style="@style/OrbitWidgetIcon"
+            android:layout_marginStart="14dp"
+            android:layout_marginTop="37dp" />
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/widget_pager"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:paddingStart="6dp"
+        android:paddingEnd="6dp"
+        android:paddingBottom="2dp">
+
+        <ImageButton
+            android:id="@+id/widget_prev"
+            style="@style/OrbitWidgetNav"
+            android:layout_gravity="start|bottom"
+            android:src="@drawable/ic_chevron_left"
+            android:contentDescription="@string/widget_prev" />
+
+        <ImageButton
+            android:id="@+id/widget_next"
+            style="@style/OrbitWidgetNav"
+            android:layout_gravity="end|bottom"
+            android:src="@drawable/ic_chevron_right"
+            android:contentDescription="@string/widget_next" />
+    </FrameLayout>
+
+    <LinearLayout
+        android:id="@+id/widget_empty"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/widget_empty_text"
+            android:textColor="#A1A1AA"
+            android:textSize="12sp"
+            android:gravity="center" />
+
+        <Button
+            android:id="@+id/widget_edit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/edit_in_orbit" />
+    </LinearLayout>
+</FrameLayout>

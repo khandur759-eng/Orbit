@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Orbit</string>
+    <string name="brand_subtitle">APP SPACE</string>
+    <string name="all_apps">All Apps</string>
+    <string name="selected_apps">Selected</string>
+    <string name="recent">Recent</string>
+    <string name="search_hint">Search apps</string>
+    <string name="search_clear">Clear search</string>
+    <string name="settings">Settings</string>
+    <string name="edit_apps">Edit Apps</string>
+    <string name="select_all">Select all</string>
+    <string name="clear_selection">Clear</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="back">Back</string>
+    <string name="quick_picker">Quick Picker</string>
+
+    <string name="no_apps_title">No apps found</string>
+    <string name="no_apps_body">Orbit could not find any launchable apps on this device.</string>
+    <string name="no_results_title">Nothing matches</string>
+    <string name="no_results_body">Try a different search term.</string>
+    <string name="no_selection_title">Select an app</string>
+    <string name="no_selection_body">Choose apps to show in the wheel.</string>
+    <string name="empty_selection_title">No apps selected</string>
+    <string name="empty_selection_body">You have not selected any apps for the wheel yet.</string>
+    <string name="edit_selection_action">Edit apps</string>
+    <string name="launch_failed">That app could not be opened.</string>
+
+    <string name="widget_label">Orbit</string>
+    <string name="widget_description">Your selected apps, arranged in a circle. Tap an icon to open it.</string>
+    <string name="widget_empty_text">No apps selected</string>
+    <string name="edit_in_orbit">Edit in Orbit</string>
+    <string name="widget_prev">Previous apps</string>
+    <string name="widget_next">Next apps</string>
+    <string name="shortcut_short">Quick Picker</string>
+    <string name="shortcut_long">Orbit Quick Picker</string>
+</resources>

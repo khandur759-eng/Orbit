@@ -12,28 +12,32 @@ Kiraya is a WebView that loads one self-contained `assets/index.html`, so a sing
 
 ---
 
-## FAST — warm incremental Gradle build (~2–4 min)
+## FAST — warm incremental Gradle build (~1–4 min)
 
 **Use when the sandbox is warm** (JDK, Android SDK, Gradle and the Gradle cache still present). Gradle recompiles only the changed sources and reuses the cached D8 dex transforms.
 
 Steps:
 
-1. Bump `versionCode` +1 and `versionName` (e.g. `1.1.0` → `1.1.1`) in `app/build.gradle.kts`.
-2. Restore the newest source from the repo and **confirm the version before building**.
+1. Bump `versionCode` +1 and `versionName` in `app/build.gradle.kts`.
+2. Restore the newest source from the repo; make sure `keystore.properties` and `keystore/orbit-release.jks` are present (from `Orbit-signing.zip`).
 3. `./gradlew :app:assembleDebug :app:testDebugUnitTest`.
-4. Verify: `aapt2 dump badging` (versionCode/versionName) and `apksigner verify`.
+4. Verify: `aapt2 dump badging` (versionCode/versionName) and `apksigner verify --print-certs` (must show `CN=Orbit`).
 
 ---
 
 ## SLOW — cold full build (~10–20 min)
 
-**Use when the sandbox has reset** (toolchain + Gradle cache gone), or a dependency / Gradle plugin / SDK version changed. Needs a real toolchain: **JDK 17**, Android SDK **platform 35 + build-tools 35.0.0**, **Gradle 8.9**, and re-downloading ~250 MB of dependencies. A cold run spills across several commands (per-command cap ~4 min).
+**Use when the sandbox has reset** (toolchain + Gradle cache gone), or a dependency / Gradle plugin / SDK version changed. Needs **JDK 17**, Android SDK **platform 35 + build-tools 35.0.0**, **Gradle 8.9**, and re-downloading ~250 MB of dependencies. A cold run spills across several commands (per-command cap ~4 min).
 
 ---
 
-## Signing
+## Signing — one stable keystore
 
-Orbit currently uses the **auto-generated debug keystore**, which is recreated on every cold sandbox. A new APK therefore has a *different* signature and cannot install over the previous one. To make updates install in place (and to allow any future repack), switch to **one stable keystore** and reuse it forever.
+Orbit is signed with a **single stable keystore** so a new APK installs **over the previous one** instead of demanding a reinstall:
+
+- `keystore/orbit-release.jks` (alias `orbit`, RSA-2048, valid to 2054) plus `keystore.properties`.
+- These are **NOT committed to the repo** — keep them in the delivered `Orbit-signing.zip` (and in the sandbox's saved files).
+- `app/build.gradle.kts` reads `keystore.properties` when present and signs **both debug and release** with it. If it is absent the build falls back to the auto-generated debug key — which changes the signature and breaks in-place updates, so always restore the keystore first.
 
 ---
 
